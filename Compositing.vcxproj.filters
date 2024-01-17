@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="API\WIC.h" />
+    <ClInclude Include="API\Direct2D.h" />
+    <ClInclude Include="Resources.h" />
+    <ClInclude Include="API\DirectWrite.h" />
+    <ClInclude Include="API\Raster.h" />
+    <ClInclude Include="API\Direct3D.h" />
+    <ClInclude Include="API\DXGI.h" />
+    <ClInclude Include="API\COMException.h" />
+    <ClInclude Include="API\DirectComposition.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="API\WIC.cpp" />
+    <ClCompile Include="API\Direct2D.cpp" />
+    <ClCompile Include="API\DirectWrite.cpp" />
+    <ClCompile Include="API\Raster.cpp" />
+    <ClCompile Include="API\Direct3D.cpp" />
+    <ClCompile Include="API\DXGI.cpp" />
+    <ClCompile Include="API\DirectComposition.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="App.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Image01.jpg" />
+    <Image Include="Resources\Image02.jpg" />
+    <Image Include="Resources\Image03.jpg" />
+    <Image Include="Resources\Image04.jpg" />
+    <Image Include="Resources\Image05.png" />
+    <Image Include="Resources\Screenshot.png" />
+  </ItemGroup>
+</Project>
