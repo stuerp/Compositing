@@ -9,5 +9,5 @@ It creates a custom Direct3D swap chain and presents it using DirectComposition 
 
 ## References
 
-* kenny Kerr, [Introducing Direct2D 1.1](https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/may/windows-with-c-introducing-direct2d-1-1)
+* Kenny Kerr, [Introducing Direct2D 1.1](https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/may/windows-with-c-introducing-direct2d-1-1)
 * Kenny Kerr, [High-Performance Window Layering Using the Windows Composition Engine](https://learn.microsoft.com/en-us/archive/msdn-magazine/2014/june/windows-with-c-high-performance-window-layering-using-the-windows-composition-engine)
