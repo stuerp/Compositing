@@ -197,16 +197,6 @@ HRESULT App::Render()
 
         _DC->SetTransform(D2D1::Matrix3x2F::Identity());
 
-        // Draw the circle.
-        {
-            const D2D1_POINT_2F Center = D2D1::Point2F(RenderTargetSize.width / 2.f, RenderTargetSize.height / 2.f);
-            const FLOAT Radius = ((std::min)(RenderTargetSize.width, RenderTargetSize.height) / 2.f) - 8.f;
-            const D2D1_ELLIPSE Ellipse = D2D1::Ellipse(Center, Radius, Radius);
-
-            _SolidBrush->SetColor(D2D1::ColorF(0.18f, 0.55f, 0.34f, 0.75f));
-            _DC->FillEllipse(Ellipse, _SolidBrush);
-        }
-
         if (_Bitmap)
         {
             D2D1_SIZE_F Size = _Bitmap->GetSize();
@@ -217,6 +207,16 @@ HRESULT App::Render()
             Rect.bottom += Rect.top;
 
             _DC->DrawBitmap(_Bitmap, Rect);
+        }
+
+        // Draw the spotlight.
+        {
+            const D2D1_POINT_2F Center = D2D1::Point2F(RenderTargetSize.width / 2.f, RenderTargetSize.height / 2.f);
+            const FLOAT Radius = ((std::min)(RenderTargetSize.width, RenderTargetSize.height) / 2.f) - 8.f;
+            const D2D1_ELLIPSE Ellipse = D2D1::Ellipse(Center, Radius, Radius);
+
+            _SolidBrush->SetColor(D2D1::ColorF(.75f, .75f, 1, .25f));
+            _DC->FillEllipse(Ellipse, _SolidBrush);
         }
 
         if (_Message[0])
@@ -237,8 +237,10 @@ HRESULT App::Render()
     return hr;
 }
 
-// Create resources which are not bound to any device. Their lifetime effectively extends for the duration of the app. These resources include the Direct2D,
-// DirectWrite, and WIC factories; and a DirectWrite Text Format object (used for identifying particular font characteristics) and a Direct2D geometry.
+/// <summary>
+/// Create resources which are not bound to any device. Their lifetime effectively extends for the duration of the app. These resources include the Direct2D,
+/// DirectWrite, and WIC factories; and a DirectWrite Text Format object (used for identifying particular font characteristics) and a Direct2D geometry.
+/// </summary>
 HRESULT App::CreateDeviceIndependentResources()
 {
     HRESULT hr = _Direct3D.GetDXGIDevice(&_DXGIDevice);
@@ -268,8 +270,10 @@ HRESULT App::CreateDeviceIndependentResources()
     return hr;
 }
 
-//  Creates resources which are bound to a particular Direct3D device. It's all centralized here, in case the resources
-//  need to be recreated in case of Direct3D device loss (eg. display change, remoting, removal of video card, etc).
+/// <summary>
+/// Creates resources which are bound to a particular Direct3D device. It's all centralized here, in case the resources
+/// need to be recreated in case of Direct3D device loss (eg. display change, remoting, removal of video card, etc).
+/// </summary>
 HRESULT App::CreateDeviceDependentResources()
 {
     RECT cr = { };
@@ -323,24 +327,24 @@ HRESULT App::CreateDeviceDependentResources()
         hr = _CompositionDevice->Commit();
 
     if (SUCCEEDED(hr) && (_BackgroundBrush == nullptr))
-        hr = CreateGridPatternBrush(_DC, &_BackgroundBrush);
+        hr = CreatePatternBrush(_DC, &_BackgroundBrush);
 
     if (SUCCEEDED(hr) && (_SolidBrush == nullptr))
         hr = _DC->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &_SolidBrush);
-/*
+
     if (SUCCEEDED(hr) && (_BitmapSource == nullptr))
         hr = CreateBitmapSource(&_BitmapSource);
 
     if (SUCCEEDED(hr) && (_Bitmap == nullptr))
-        hr = CreateBitmap(_BitmapSource, _RenderTarget, RenderTargetSize, &_Bitmap);
-*/
+        hr = CreateBitmap(_BitmapSource, _DC, Width, Height, &_Bitmap);
+
     return hr;
 }
 
-//
-// Creates a pattern brush.
-//
-HRESULT App::CreateGridPatternBrush(ID2D1RenderTarget * renderTarget, ID2D1BitmapBrush ** bitmapBrush) const noexcept
+/// <summary>
+/// Creates the pattern brush to paint the background.
+/// </summary>
+HRESULT App::CreatePatternBrush(ID2D1RenderTarget * renderTarget, ID2D1BitmapBrush ** bitmapBrush) const noexcept
 {
     CComPtr<ID2D1BitmapRenderTarget> rt;
 
@@ -394,7 +398,7 @@ HRESULT App::CreateBitmapSource(IWICBitmapSource ** bitmapSource) const noexcept
 /// <summary>
 /// Creates a Direct2D bitmap from the bitmap source.
 /// </summary>
-HRESULT App::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, const D2D1_SIZE_U & size, ID2D1Bitmap ** bitmap) const noexcept
+HRESULT App::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, UINT maxWidth, UINT maxHeight, ID2D1Bitmap ** bitmap) const noexcept
 {
     UINT Width = 0, Height = 0;
 
@@ -403,8 +407,8 @@ HRESULT App::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * r
     CComPtr<IWICBitmapScaler> Scaler;
 
     // Fit big images.
-    if (SUCCEEDED(hr) && ((Width > size.width) || (Height > size.height)))
-        hr = _Direct2D.CreateScaler(_BitmapSource, Width, Height, size.width, size.height, &Scaler);
+    if (SUCCEEDED(hr) && ((Width > maxWidth) || (Height > maxHeight)))
+        hr = _Direct2D.CreateScaler(_BitmapSource, Width, Height, maxWidth, maxHeight, &Scaler);
 
     if (SUCCEEDED(hr))
         hr = _Direct2D.CreateBitmap(Scaler ? Scaler : bitmapSource, renderTarget, bitmap);

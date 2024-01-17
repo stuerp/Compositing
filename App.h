@@ -30,9 +30,9 @@ private:
     void ResizeSwapChain(UINT width, UINT height) noexcept;
     HRESULT CreateSwapChainBuffers(ID2D1DeviceContext * dc, IDXGISwapChain1 * swapChain) noexcept;
 
-    HRESULT CreateGridPatternBrush(ID2D1RenderTarget * renderTarget, ID2D1BitmapBrush ** bitmapBrush) const noexcept;
+    HRESULT CreatePatternBrush(ID2D1RenderTarget * renderTarget, ID2D1BitmapBrush ** bitmapBrush) const noexcept;
     HRESULT CreateBitmapSource(IWICBitmapSource ** bitmapSource) const noexcept;
-    HRESULT CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, const D2D1_SIZE_U & size, ID2D1Bitmap ** bitmap) const noexcept;
+    HRESULT CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, UINT maxWidth, UINT maxHeight, ID2D1Bitmap ** bitmap) const noexcept;
 
 private:
     HWND _hWnd;
