@@ -80,7 +80,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>.;API</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Windows</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -101,7 +101,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.;API</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Windows</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>.;API</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Windows</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +141,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>.;API</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Windows</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,27 +151,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="API\DirectComposition.h" />
+    <ClInclude Include="Windows\DirectComposition.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="API\COMException.h" />
-    <ClInclude Include="API\Direct2D.h" />
-    <ClInclude Include="API\Direct3D.h" />
-    <ClInclude Include="API\DirectWrite.h" />
-    <ClInclude Include="API\DXGI.h" />
+    <ClInclude Include="Windows\COMException.h" />
+    <ClInclude Include="Windows\Direct2D.h" />
+    <ClInclude Include="Windows\Direct3D.h" />
+    <ClInclude Include="Windows\DirectWrite.h" />
+    <ClInclude Include="Windows\DXGI.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="API\Raster.h" />
+    <ClInclude Include="Windows\Raster.h" />
     <ClInclude Include="Resources.h" />
-    <ClInclude Include="API\WIC.h" />
+    <ClInclude Include="Windows\WIC.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="API\DirectComposition.cpp" />
+    <ClCompile Include="Windows\DirectComposition.cpp" />
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="API\Direct2D.cpp" />
-    <ClCompile Include="API\Direct3D.cpp" />
-    <ClCompile Include="API\DirectWrite.cpp" />
-    <ClCompile Include="API\DXGI.cpp" />
-    <ClCompile Include="API\Raster.cpp" />
-    <ClCompile Include="API\WIC.cpp" />
+    <ClCompile Include="Windows\Direct2D.cpp" />
+    <ClCompile Include="Windows\Direct3D.cpp" />
+    <ClCompile Include="Windows\DirectWrite.cpp" />
+    <ClCompile Include="Windows\DXGI.cpp" />
+    <ClCompile Include="Windows\Raster.cpp" />
+    <ClCompile Include="Windows\WIC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="App.rc" />
