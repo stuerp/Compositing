@@ -1,3 +1,4 @@
 #include <winres.h>
 
 Image01 image "Resources\Homer Simpson.png"
+Image02 image "Resources\Mail.png"

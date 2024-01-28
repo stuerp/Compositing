@@ -12,6 +12,7 @@
     <ClInclude Include="Windows\DXGI.h" />
     <ClInclude Include="Windows\COMException.h" />
     <ClInclude Include="Windows\DirectComposition.h" />
+    <ClInclude Include="Child.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -22,6 +23,7 @@
     <ClCompile Include="Windows\Direct3D.cpp" />
     <ClCompile Include="Windows\DXGI.cpp" />
     <ClCompile Include="Windows\DirectComposition.cpp" />
+    <ClCompile Include="Child.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="App.rc" />

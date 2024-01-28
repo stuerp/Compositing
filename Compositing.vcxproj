@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Child.h" />
     <ClInclude Include="Windows\DirectComposition.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Windows\COMException.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Windows\WIC.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Child.cpp" />
     <ClCompile Include="Windows\DirectComposition.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Windows\Direct2D.cpp" />

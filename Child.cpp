@@ -1,31 +1,29 @@
 
-/** $VER: App.cpp (2024.01.17) P. Stuer **/
+/** $VER: Child.cpp (2024.01.28) P. Stuer **/
 
 #include <CppCoreCheck/Warnings.h>
 
 #pragma warning(disable: 4100 4625 4626 4710 4711 5045 ALL_CPPCORECHECK_WARNINGS)
 
-#include "App.h"
+#include "Child.h"
 
 #include "Direct3D.h"
 #include "Direct2D.h"
 #include "DirectWrite.h"
-
-#include <chrono>
 
 #pragma hdrstop
 
 /// <summary>
 /// Initializes a new instance.
 /// </summary>
-App::App() : _hWnd(), _Number(1), _FilePath(), _Message()
+Child::Child() : _hWnd(), _Number(2)
 {
 }
 
 /// <summary>
 /// Destructs this instance.
 /// </summary>
-App::~App()
+Child::~Child()
 {
     DeleteDeviceDependentResources();
 }
@@ -33,7 +31,7 @@ App::~App()
 /// <summary>
 /// Initializes this instance.
 /// </summary>
-HRESULT App::Initialize()
+HRESULT Child::Initialize(HWND hParent)
 {
     HRESULT hr = CreateDeviceIndependentResources();
 
@@ -43,32 +41,26 @@ HRESULT App::Initialize()
 
         wcex.lpszClassName = ClassName;
         wcex.style = CS_HREDRAW | CS_VREDRAW;
-        wcex.lpfnWndProc = App::WndProc;
+        wcex.lpfnWndProc = Child::WndProc;
         wcex.hInstance = THIS_HINSTANCE;
-        wcex.hbrBackground = NULL;
-        wcex.lpszMenuName = NULL;
         wcex.hCursor = ::LoadCursorW(NULL, IDC_ARROW);
-        wcex.cbClsExtra = 0;
         wcex.cbWndExtra = sizeof(LONG_PTR);
 
         ::RegisterClassExW(&wcex);
 
-        const DWORD Style = WS_OVERLAPPEDWINDOW;
+        const DWORD Style = WS_CHILDWINDOW;
         const DWORD ExStyle = WS_EX_NOREDIRECTIONBITMAP; // Disable the creation of the opaque redirection surface.
 
-        _hWnd = ::CreateWindowExW(ExStyle, ClassName, WindowTitle, Style, 0, 0, 0, 0, NULL, NULL, THIS_HINSTANCE, this);
+        _hWnd = ::CreateWindowExW(ExStyle, ClassName, nullptr, Style, 0, 0, 0, 0, hParent, NULL, THIS_HINSTANCE, this);
 
         hr = _hWnd ? S_OK : E_FAIL;
     }
 
     if (SUCCEEDED(hr))
-        _Child.Initialize(_hWnd);
-
-    if (SUCCEEDED(hr))
     {
         UINT DPI = ::GetDpiForWindow(_hWnd);
 
-        ::MoveWindow(_hWnd, 0, 0, (int) ::ceil(640.f * (float) DPI / 96.f), (int) ::ceil(480.f * (float) DPI / 96.f), TRUE);
+        ::MoveWindow(_hWnd, (int) ::ceil(16.f * (float) DPI / 96.f), (int) ::ceil(16.f * (float) DPI / 96.f), (int) ::ceil(144.f * (float) DPI / 96.f), (int) ::ceil(144.f * (float) DPI / 96.f), TRUE);
 
         ::ShowWindow(_hWnd, SW_SHOWNORMAL);
         ::UpdateWindow(_hWnd);
@@ -80,12 +72,12 @@ HRESULT App::Initialize()
 /// <summary>
 /// Windows procedure
 /// </summary>
-LRESULT CALLBACK App::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Child::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_CREATE)
     {
         LPCREATESTRUCT pcs = (LPCREATESTRUCT) lParam;
-        App * This = (App *) pcs->lpCreateParams;
+        Child * This = (Child *) pcs->lpCreateParams;
 
         ::SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(This));
 
@@ -94,7 +86,7 @@ LRESULT CALLBACK App::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         return 1;
     }
  
-    App * This = (App *)(::GetWindowLongPtrW(hWnd, GWLP_USERDATA));
+    Child * This = (Child *)(::GetWindowLongPtrW(hWnd, GWLP_USERDATA));
 
     if (This != nullptr)
     {
@@ -116,19 +108,6 @@ LRESULT CALLBACK App::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
                 return 0;
             }
-
-            case WM_DROPFILES:
-                return This->OnDropFiles((HDROP) wParam);
-
-            case WM_KEYDOWN:
-                return This->OnKeyDown(wParam);
-
-            case WM_DESTROY:
-            {
-                ::PostQuitMessage(0);
-
-                return 1;
-            }
         }
     }
 
@@ -138,7 +117,7 @@ LRESULT CALLBACK App::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 /// <summary>
 /// Handles the WM_SIZE message.
 /// </summary>
-LRESULT App::OnResize(UINT width, UINT height)
+LRESULT Child::OnResize(UINT width, UINT height)
 {
     if (_DC == nullptr)
         return 0;
@@ -151,44 +130,9 @@ LRESULT App::OnResize(UINT width, UINT height)
 }
 
 /// <summary>
-/// Handles the WM_DROPFILES message.
-/// </summary>
-LRESULT App::OnDropFiles(HDROP hDrop)
-{
-    if (::DragQueryFileW(hDrop, 0, _FilePath, _countof(_FilePath)) != 0)
-    {
-        DeleteBitmapSourceDependentResources();
-
-        ::InvalidateRect(_hWnd, nullptr, TRUE);
-    }
-
-    ::DragFinish(hDrop);
-
-    return 0;
-}
-
-/// <summary>
-/// Handles the WM_KEYDOWN message.
-/// </summary>
-LRESULT App::OnKeyDown(WPARAM wParam)
-{
-    switch (wParam)
-    {
-        default:
-            return 1;
-
-        case VK_ESCAPE:
-            ::PostQuitMessage(0);
-            break;
-    }
-
-    return 0;
-}
-
-/// <summary>
 /// Renders a frame.
 /// </summary>
-HRESULT App::Render()
+HRESULT Child::Render()
 {
     HRESULT hr = CreateDeviceDependentResources();
 
@@ -212,22 +156,6 @@ HRESULT App::Render()
             _DC->DrawBitmap(_Bitmap, Rect);
         }
 
-        // Draw the spotlight.
-        {
-            const D2D1_POINT_2F Center = D2D1::Point2F(RenderTargetSize.width / 2.f, RenderTargetSize.height / 2.f);
-            const FLOAT Radius = ((std::min)(RenderTargetSize.width, RenderTargetSize.height) / 2.f) - 8.f;
-            const D2D1_ELLIPSE Ellipse = D2D1::Ellipse(Center, Radius, Radius);
-
-            _SolidBrush->SetColor(D2D1::ColorF(.75f, .75f, 1, .25f));
-            _DC->FillEllipse(Ellipse, _SolidBrush);
-        }
-
-        if (_Message[0])
-        {
-            _SolidBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
-            _DC->DrawText(_Message, (UINT) ::wcslen(_Message), _TextFormat, D2D1::RectF(0.f, 0.f, RenderTargetSize.width, RenderTargetSize.height), _SolidBrush);
-        }
-
         _DC->EndDraw();
 
         // Present the swap chain to the composition engine.
@@ -244,7 +172,7 @@ HRESULT App::Render()
 /// Create resources which are not bound to any device. Their lifetime effectively extends for the duration of the app. These resources include the Direct2D,
 /// DirectWrite, and WIC factories; and a DirectWrite Text Format object (used for identifying particular font characteristics) and a Direct2D geometry.
 /// </summary>
-HRESULT App::CreateDeviceIndependentResources()
+HRESULT Child::CreateDeviceIndependentResources()
 {
     HRESULT hr = _Direct3D.GetDXGIDevice(&_DXGIDevice);
 
@@ -256,20 +184,6 @@ HRESULT App::CreateDeviceIndependentResources()
     if (SUCCEEDED(hr))
         hr = ::DCompositionCreateDevice(_DXGIDevice, __uuidof(_CompositionDevice), (void **) &_CompositionDevice);
 
-    if (SUCCEEDED(hr))
-    {
-        static const WCHAR FontName[] = L"Verdana";
-        static const FLOAT FontSize = 24.f;
-
-        hr = _DirectWrite.Factory->CreateTextFormat(FontName, NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, FontSize, L"", &_TextFormat);
-    }
-
-    if (SUCCEEDED(hr))
-    {
-        _TextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        _TextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-    }
-
     return hr;
 }
 
@@ -277,7 +191,7 @@ HRESULT App::CreateDeviceIndependentResources()
 /// Creates resources which are bound to a particular Direct3D device. It's all centralized here, in case the resources
 /// need to be recreated in case of Direct3D device loss (eg. display change, remoting, removal of video card, etc).
 /// </summary>
-HRESULT App::CreateDeviceDependentResources()
+HRESULT Child::CreateDeviceDependentResources()
 {
     RECT cr = { };
 
@@ -329,12 +243,6 @@ HRESULT App::CreateDeviceDependentResources()
     if (SUCCEEDED(hr))
         hr = _CompositionDevice->Commit();
 
-    if (SUCCEEDED(hr) && (_BackgroundBrush == nullptr))
-        hr = CreatePatternBrush(_DC, &_BackgroundBrush);
-
-    if (SUCCEEDED(hr) && (_SolidBrush == nullptr))
-        hr = _DC->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &_SolidBrush);
-
     if (SUCCEEDED(hr) && (_BitmapSource == nullptr))
         hr = CreateBitmapSource(&_BitmapSource);
 
@@ -345,52 +253,10 @@ HRESULT App::CreateDeviceDependentResources()
 }
 
 /// <summary>
-/// Creates the pattern brush to paint the background.
-/// </summary>
-HRESULT App::CreatePatternBrush(ID2D1RenderTarget * renderTarget, ID2D1BitmapBrush ** bitmapBrush) const noexcept
-{
-    CComPtr<ID2D1BitmapRenderTarget> rt;
-
-    HRESULT hr = renderTarget->CreateCompatibleRenderTarget(D2D1::SizeF(10.0f, 10.0f), &rt);
-
-    CComPtr<ID2D1SolidColorBrush> GridBrush;
-
-    if (SUCCEEDED(hr))
-        hr = rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.93f, 0.94f, 0.96f, 1.0f)), &GridBrush);
-
-    if (SUCCEEDED(hr))
-    {
-        rt->BeginDraw();
-
-        rt->FillRectangle(D2D1::RectF(0.0f, 0.0f, 10.0f, 1.0f), GridBrush);
-        rt->FillRectangle(D2D1::RectF(0.0f, 0.1f, 1.0f, 10.0f), GridBrush);
-
-        hr = rt->EndDraw();
-    }
-
-    CComPtr<ID2D1Bitmap> GridBitmap;
-
-    if (SUCCEEDED(hr))
-        hr = rt->GetBitmap(&GridBitmap);
-
-    if (SUCCEEDED(hr))
-    {
-        D2D1_BITMAP_BRUSH_PROPERTIES BrushProperties = D2D1::BitmapBrushProperties(D2D1_EXTEND_MODE_WRAP, D2D1_EXTEND_MODE_WRAP);
-
-        hr = rt->CreateBitmapBrush(GridBitmap, BrushProperties, bitmapBrush);
-    }
-
-    return hr;
-}
-
-/// <summary>
 /// Creates the bitmap source.
 /// </summary>
-HRESULT App::CreateBitmapSource(IWICBitmapSource ** bitmapSource) const noexcept
+HRESULT Child::CreateBitmapSource(IWICBitmapSource ** bitmapSource) const noexcept
 {
-    if (_FilePath[0] != 0)
-        return _Direct2D.Load(_FilePath, bitmapSource);
-
     WCHAR ResourceName[64] = { };
 
     ::swprintf_s(ResourceName, _countof(ResourceName), L"Image%02d", _Number);
@@ -401,7 +267,7 @@ HRESULT App::CreateBitmapSource(IWICBitmapSource ** bitmapSource) const noexcept
 /// <summary>
 /// Creates a Direct2D bitmap from the bitmap source.
 /// </summary>
-HRESULT App::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, UINT maxWidth, UINT maxHeight, ID2D1Bitmap ** bitmap) const noexcept
+HRESULT Child::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * renderTarget, UINT maxWidth, UINT maxHeight, ID2D1Bitmap ** bitmap) const noexcept
 {
     UINT Width = 0, Height = 0;
 
@@ -422,7 +288,7 @@ HRESULT App::CreateBitmap(IWICBitmapSource * bitmapSource, ID2D1RenderTarget * r
 /// <summary>
 /// Discards device-specific resources related to a bitmap source.
 /// </summary>
-void App::DeleteBitmapSourceDependentResources()
+void Child::DeleteBitmapSourceDependentResources()
 {
     _Bitmap.Release();
     _BitmapSource.Release();
@@ -431,12 +297,9 @@ void App::DeleteBitmapSourceDependentResources()
 /// <summary>
 /// Discards device-specific resources which need to be recreated when a Direct3D device is lost.
 /// </summary>
-void App::DeleteDeviceDependentResources()
+void Child::DeleteDeviceDependentResources()
 {
     DeleteBitmapSourceDependentResources();
-
-    _SolidBrush.Release();
-    _BackgroundBrush.Release();
 
     _SwapChain.Release();
     _DC.Release();
@@ -445,7 +308,7 @@ void App::DeleteDeviceDependentResources()
 /// <summary>
 /// Resizes the swap chain buffers.
 /// </summary>
-void App::ResizeSwapChain(UINT width, UINT height) noexcept
+void Child::ResizeSwapChain(UINT width, UINT height) noexcept
 {
     // Release the reference to the swap chain before resizing its buffers.
     _DC->SetTarget(nullptr);
@@ -464,7 +327,7 @@ void App::ResizeSwapChain(UINT width, UINT height) noexcept
 /// <summary>
 /// Creates the swap chain buffers.
 /// </summary>
-HRESULT App::CreateSwapChainBuffers(ID2D1DeviceContext * dc, IDXGISwapChain1 * swapChain) noexcept
+HRESULT Child::CreateSwapChainBuffers(ID2D1DeviceContext * dc, IDXGISwapChain1 * swapChain) noexcept
 {
     // Retrieve the swap chain's back buffer.
     CComPtr<IDXGISurface2> Surface;
@@ -490,34 +353,4 @@ HRESULT App::CreateSwapChainBuffers(ID2D1DeviceContext * dc, IDXGISwapChain1 * s
     }
 
     return hr;
-}
-
-/// <summary>
-/// Entry point
-/// </summary>
-int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
-{
-    ::HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, nullptr, 0);
-
-    if (SUCCEEDED(::CoInitialize(nullptr)))
-    {
-        {
-            App app;
-
-            if (SUCCEEDED(app.Initialize()))
-            {
-                MSG Msg;
-
-                while (::GetMessageW(&Msg, NULL, 0, 0))
-                {
-                    ::TranslateMessage(&Msg);
-                    ::DispatchMessageW(&Msg);
-                }
-            }
-        }
-
-        ::CoUninitialize();
-    }
-
-    return 0;
 }
