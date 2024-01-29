@@ -142,7 +142,7 @@ HRESULT Child::Render()
 
         _DC->BeginDraw();
 
-        _DC->SetTransform(D2D1::Matrix3x2F::Identity());
+        _DC->Clear(D2D1::ColorF(0, 0.f));
 
         if (_Bitmap)
         {
@@ -213,6 +213,7 @@ HRESULT Child::CreateDeviceDependentResources()
             FLOAT DPI = (FLOAT) ::GetDpiForWindow(_hWnd);
 
             _DC->SetDpi(DPI, DPI);
+            _DC->SetTransform(D2D1::Matrix3x2F::Identity());
         }
     }
 
