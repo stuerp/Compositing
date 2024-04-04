@@ -1,9 +1,11 @@
 
-/** $VER: Child.cpp (2024.01.28) P. Stuer **/
+/** $VER: Child.cpp (2024.04.04) P. Stuer **/
 
 #include <CppCoreCheck/Warnings.h>
 
 #pragma warning(disable: 4100 4625 4626 4710 4711 5045 ALL_CPPCORECHECK_WARNINGS)
+
+#include "framework.h"
 
 #include "Child.h"
 
@@ -33,6 +35,9 @@ Child::~Child()
 /// </summary>
 HRESULT Child::Initialize(HWND hParent)
 {
+    const DWORD Style = WS_CHILDWINDOW;
+    const DWORD ExStyle = WS_EX_NOREDIRECTIONBITMAP; // Disable the creation of the opaque redirection surface.
+
     HRESULT hr = CreateDeviceIndependentResources();
 
     if (SUCCEEDED(hr))
@@ -48,9 +53,6 @@ HRESULT Child::Initialize(HWND hParent)
 
         ::RegisterClassExW(&wcex);
 
-        const DWORD Style = WS_CHILDWINDOW;
-        const DWORD ExStyle = WS_EX_NOREDIRECTIONBITMAP; // Disable the creation of the opaque redirection surface.
-
         _hWnd = ::CreateWindowExW(ExStyle, ClassName, nullptr, Style, 0, 0, 0, 0, hParent, NULL, THIS_HINSTANCE, this);
 
         hr = _hWnd ? S_OK : E_FAIL;
@@ -58,9 +60,13 @@ HRESULT Child::Initialize(HWND hParent)
 
     if (SUCCEEDED(hr))
     {
+        RECT wr = { 0, 0, 144, 144 };
+
+        ::AdjustWindowRectEx(&wr, Style, FALSE, ExStyle);
+
         UINT DPI = ::GetDpiForWindow(_hWnd);
 
-        ::MoveWindow(_hWnd, (int) ::ceil(16.f * (float) DPI / 96.f), (int) ::ceil(16.f * (float) DPI / 96.f), (int) ::ceil(144.f * (float) DPI / 96.f), (int) ::ceil(144.f * (float) DPI / 96.f), TRUE);
+        ::MoveWindow(_hWnd, ToDPI(16, DPI), ToDPI(16, DPI), ToDPI(wr.right, DPI), ToDPI(wr.bottom, DPI), TRUE);
 
         ::ShowWindow(_hWnd, SW_SHOWNORMAL);
         ::UpdateWindow(_hWnd);

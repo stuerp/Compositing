@@ -24,6 +24,7 @@
     <ClCompile Include="Windows\DXGI.cpp" />
     <ClCompile Include="Windows\DirectComposition.cpp" />
     <ClCompile Include="Child.cpp" />
+    <ClCompile Include="framework.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="App.rc" />
@@ -40,5 +41,7 @@
     <Image Include="Resources\Image04.jpg" />
     <Image Include="Resources\Image05.png" />
     <Image Include="Resources\Screenshot.png" />
+    <Image Include="Resources\Homer Simpson.png" />
+    <Image Include="Resources\Mail.png" />
   </ItemGroup>
 </Project>

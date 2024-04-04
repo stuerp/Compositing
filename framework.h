@@ -1,5 +1,5 @@
 
-/** $VER: framework.h (2024.01.17) P. Stuer **/
+/** $VER: framework.h (2024.04.04) P. Stuer **/
 
 #pragma once
 
@@ -11,7 +11,6 @@
 
 #define NOMINMAX
 #include <windows.h>
-#undef NOMINMAX
 
 #include <atlbase.h>
 
@@ -21,8 +20,14 @@
 #include <d2d1helper.h>
 #include <dcomp.h>
 #include <dwrite.h>
-
 #include <wincodec.h>
+
+#pragma comment(lib, "dxgi")
+#pragma comment(lib, "d2d1")
+#pragma comment(lib, "dwrite")
+#pragma comment(lib, "d3d11")
+#pragma comment(lib, "dcomp")
+#pragma comment(lib, "windowscodecs")
 
 #include <stdlib.h>
 #include <strsafe.h>
@@ -31,6 +36,8 @@
 #include <wchar.h>
 
 #include <cmath>
+
+#include "COMException.h"
 
 #ifndef Assert
 #if defined(DEBUG) || defined(_DEBUG)
@@ -47,3 +54,8 @@
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define THIS_HINSTANCE ((HINSTANCE) &__ImageBase)
 #endif
+
+inline int ToDPI(int pixels, UINT dpi)
+{
+    return (int) ::ceil((float) pixels * (float) dpi / USER_DEFAULT_SCREEN_DPI);
+}

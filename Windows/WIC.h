@@ -1,5 +1,5 @@
 
-/** $VER: WIC.h (2024.01.16) P. Stuer **/
+/** $VER: WIC.h (2024.04.04) P. Stuer **/
 
 #pragma once
 
@@ -14,7 +14,7 @@ public:
 
     HRESULT GetFormatConverter(IWICBitmapFrameDecode * frame, IWICFormatConverter ** formatConverter) const noexcept;
 
-    HRESULT CreateBitmapFromSource(IWICBitmapSource * bitmapSource, WICBitmapCreateCacheOption option, IWICBitmap ** bitmap)
+    HRESULT CreateBitmapFromSource(IWICBitmapSource * bitmapSource, WICBitmapCreateCacheOption option, IWICBitmap ** bitmap) const
     {
         return Factory->CreateBitmapFromSource(bitmapSource, option, bitmap);
     }

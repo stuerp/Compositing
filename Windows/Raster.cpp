@@ -1,5 +1,7 @@
 
-/** $VER: Raster.cpp (2024.01.16) P. Stuer **/
+/** $VER: Raster.cpp (2024.04.04) P. Stuer **/
+
+#include "framework.h"
 
 #include "Raster.h"
 

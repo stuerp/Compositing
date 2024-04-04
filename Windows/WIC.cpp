@@ -1,11 +1,9 @@
 
-/** $VER: WIC.cpp (2024.01.17) P. Stuer **/
+/** $VER: WIC.cpp (2024.04.04) P. Stuer **/
+
+#include "framework.h"
 
 #include "WIC.h"
-
-#include "COMException.h"
-
-#pragma comment(lib, "windowscodecs")
 
 /// <summary>
 /// Initializes a new instance.

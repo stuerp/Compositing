@@ -1,9 +1,11 @@
 
-/** $VER: App.cpp (2024.01.17) P. Stuer **/
+/** $VER: App.cpp (2024.04.04) P. Stuer **/
 
 #include <CppCoreCheck/Warnings.h>
 
 #pragma warning(disable: 4100 4625 4626 4710 4711 5045 ALL_CPPCORECHECK_WARNINGS)
+
+#include "framework.h"
 
 #include "App.h"
 
@@ -35,6 +37,9 @@ App::~App()
 /// </summary>
 HRESULT App::Initialize()
 {
+    const DWORD Style = WS_OVERLAPPEDWINDOW;
+    const DWORD ExStyle = WS_EX_NOREDIRECTIONBITMAP; // Disable the creation of the opaque redirection surface.
+
     HRESULT hr = CreateDeviceIndependentResources();
 
     if (SUCCEEDED(hr))
@@ -53,9 +58,6 @@ HRESULT App::Initialize()
 
         ::RegisterClassExW(&wcex);
 
-        const DWORD Style = WS_OVERLAPPEDWINDOW;
-        const DWORD ExStyle = WS_EX_NOREDIRECTIONBITMAP; // Disable the creation of the opaque redirection surface.
-
         _hWnd = ::CreateWindowExW(ExStyle, ClassName, WindowTitle, Style, 0, 0, 0, 0, NULL, NULL, THIS_HINSTANCE, this);
 
         hr = _hWnd ? S_OK : E_FAIL;
@@ -66,9 +68,13 @@ HRESULT App::Initialize()
 
     if (SUCCEEDED(hr))
     {
+        RECT wr = { 0, 0, 640, 480 };
+
+        ::AdjustWindowRectEx(&wr, Style, FALSE, ExStyle);
+
         UINT DPI = ::GetDpiForWindow(_hWnd);
 
-        ::MoveWindow(_hWnd, 0, 0, (int) ::ceil(640.f * (float) DPI / 96.f), (int) ::ceil(480.f * (float) DPI / 96.f), TRUE);
+        ::MoveWindow(_hWnd, 0, 0, ToDPI(wr.right, DPI), ToDPI(wr.bottom, DPI), TRUE);
 
         ::ShowWindow(_hWnd, SW_SHOWNORMAL);
         ::UpdateWindow(_hWnd);
